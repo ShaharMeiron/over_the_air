@@ -133,8 +133,9 @@ def main(server_address):
     while True:
         logging.info("waiting for a client to connect")
         client_socket, address = server_socket.accept()
-
-        # client verification
+        
+        # ive commented this because Tomer said that verification with otp is stupid for this exercise but i dont want to remove it completly
+        # client verification        
         # try:
         #     if not is_client_verified(client_socket):
         #         break
