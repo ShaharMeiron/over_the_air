@@ -2,14 +2,35 @@ from protocol import *
 import socket
 import os
 from shared_file_utils import *
+import ssl
 
 
 #  What will happen in real world scenario?
-def get_connected_to_server_client_socket(addr=("127.0.0.1", 5000)):
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect(addr)
-    logging.info("client connected.")
-    return sock
+def get_connected_to_server_client_socket(addr, certfile=r"C:\Users\Shahar\Downloads\rootCA.pem",
+                      keyfile=r"C:\Users\Shahar\Downloads\rootCA.key"):
+    """
+    Create an SSL/TLS client socket and connect to the server.
+
+    Args:
+        addr (tuple): A tuple of (host, port) to connect to.
+        certfile (str): Path to the client's certificate file.
+        keyfile (str): Path to the client's private key file.
+
+    Returns:
+        ssl.SSLSocket: The SSL-wrapped client socket.
+    """
+    # Create an SSL context for client
+    context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
+    context.check_hostname = False  # For debugging, disables hostname validation
+    context.verify_mode = ssl.CERT_NONE  # For debugging, disables server certificate validation
+
+    # Load client certificate and key (for mutual authentication if required)
+    context.load_cert_chain(certfile=certfile, keyfile=keyfile)
+
+    # Create a raw socket and wrap it with SSL
+    sock = socket.create_connection(addr)
+    encrypted_socket = context.wrap_socket(sock, server_hostname=addr[0])
+    return encrypted_socket
 
 
 def input_function():
@@ -49,39 +70,6 @@ def input_arguments(function_name):
     except Exception as e:
         logging.error(f"Failed to parse arguments: {e}")
         raise ValueError("Invalid input format. Please provide a valid JSON list.") from e
-
-
-def verify_password(client_socket):
-    logging.debug("verifying password...")
-    for i in range(3):
-        given_password = input("enter the password : ")
-        msg_json = {"password": given_password}
-        send_json(client_socket, msg_json)
-        respond_json = recv_json(client_socket)
-        print(respond_json["result"])
-        if respond_json["status"] == "success":
-            return True
-    return False
-
-
-def verify_email(client_socket):
-    logging.debug("verifying email...")
-    for i in range(3):
-        email = input("Please enter your email : ")
-        msg_json = {"email": email}
-        send_json(client_socket, msg_json)
-        respond_json = recv_json(client_socket)
-        print(respond_json["result"])
-        if respond_json["status"] == "success":
-            return verify_password(client_socket)  # verifies the password that has been sent to the email
-    return False
-
-
-def verification_process(client_socket) -> bool:
-    if verify_password(client_socket):
-        if verify_email(client_socket):
-            return True
-    return False
 
 
 def input_request_data():
@@ -137,19 +125,9 @@ def save_files(output_values, file_counter, client_received_files_dir_path):
     return file_counter
 
 
-
-def main():
+def main(addr):
     while True:
-        client_socket = get_connected_to_server_client_socket()
-        # try:
-        #     is_verified = verification_process(client_socket)
-        # except Exception as e:
-        #     client_socket.close()
-        #     break
-        # if not is_verified:
-        #     client_socket.close()
-        #     break
-
+        client_socket = get_connected_to_server_client_socket(addr)
         file_counter = 0
         client_received_files_dir_path = "client_received_files"
         while True:
@@ -174,4 +152,9 @@ def main():
 
 if __name__ == '__main__':
     logging.basicConfig(filemode='w', filename="client.log", level=logging.DEBUG)
-    main()
+    ip = "127.0.0.1"
+    port = "5000"
+    logging.info("client program have started...")
+    server_addr = (ip, port)
+    main(server_addr)
+    logging.info("client program have ended")
