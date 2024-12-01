@@ -3,6 +3,8 @@ from protocol import *
 from client_runnable_functions import *
 import ssl
 
+# testtt
+
 
 def get_server_socket(server_addr, certfile=r"C:\Users\Shahar\Downloads\rootCA.pem",
                       keyfile=r"C:\Users\Shahar\Downloads\rootCA.key"):
