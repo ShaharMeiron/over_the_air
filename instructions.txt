@@ -1,0 +1,1 @@
+if you want to use it with ssl/tls as is you should generate private key and certificate, follow the steps in this website : https://kb.teramind.co/en/articles/8791235-how-to-generate-your-own-self-signed-ssl-certificates-for-use-with-an-on-premise-deployments
