@@ -4,8 +4,7 @@ from client_runnable_functions import *
 import ssl
 
 
-def get_server_socket(server_addr, certfile=r"C:\Users\Shahar\Downloads\rootCA.pem",
-                      keyfile=r"C:\Users\Shahar\Downloads\rootCA.key"):
+def get_server_socket(server_addr, certfile=r"certificate.pem", keyfile=r"private_key.key"):
     # Create SSL context
     context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
     context.load_cert_chain(certfile=certfile, keyfile=keyfile)

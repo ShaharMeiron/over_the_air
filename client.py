@@ -6,8 +6,7 @@ import ssl
 
 
 #  What will happen in real world scenario?
-def get_connected_to_server_client_socket(addr, certfile=r"C:\Users\Shahar\Downloads\rootCA.pem",
-                      keyfile=r"C:\Users\Shahar\Downloads\rootCA.key"):
+def get_connected_to_server_client_socket(addr, certfile=r"certificate.pem", keyfile=r"private_key.key"):
     """
     Create an SSL/TLS client socket and connect to the server.
 
